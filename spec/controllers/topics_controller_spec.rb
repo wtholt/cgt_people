@@ -65,4 +65,50 @@ RSpec.describe TopicsController, :type => :controller do
     end
   end
 
+  describe "PUT update" do 
+    before :each do 
+      @topic = FactoryGirl.create(:topic, title: "title", description: "description")
+    end
+    context "valid attributes" do 
+      it "located the requested @topic" do 
+        put :update, id: @topic, topic: FactoryGirl.attributes_for(:topic)
+        assigns(:topic).should eq(@topic)
+      end
+
+      it "changes @topic's attributes" do 
+        put :update, id: @topic,
+          contact: FactoryGirl.attributes_for(:topic, title: "title", description: "title")
+        @topic.reload
+        @topic.title.should eq("title")
+        @topic.description.should eq("title")
+      end
+
+      it "redirects to the updated topic" do 
+        put :update, id: @topic, topic: FactoryGirl.attributes_for(:topic)
+        response.should redirect_to @topic
+      end
+    end
+
+    context "invalid attributes" do 
+
+      it "locates the requested @topic" do 
+        put :update, id: @topic, topic: FactoryGirl.attributes_for(:topic)
+        assigns(:topic).should eq(@topic)
+      end
+
+      it "does not change @topic's attributes" do 
+        put :update, id: @topic, 
+          topic: FactoryGirl.attributes_for(:topic, title: "title", description: nil)
+        @topic.reload
+        @topic.title.should_not eq("title")
+        @topic.description.should eq("description")
+      end
+
+      it "re-renders the edit method" do 
+        put :update, id: @topic, topic: FactoryGirl.attributes_for(:topic)
+        response.should render_template :edit
+      end
+    end
+  end
+
 end
